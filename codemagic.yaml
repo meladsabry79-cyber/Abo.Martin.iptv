@@ -1,0 +1,32 @@
+workflows:
+  android-release:
+    name: Abo Martin IPTV - Android APK
+    max_build_duration: 60
+    environment:
+      flutter: stable
+      java: 17
+
+    scripts:
+      - name: Find project and build APK
+        script: |
+          # البحث عن pubspec.yaml في أي مكان داخل الـ repository
+          PROJECT=$(find . -name "pubspec.yaml" -maxdepth 4 | head -1 | xargs dirname)
+          echo "✅ وجد المشروع في: $PROJECT"
+          cd "$PROJECT"
+          echo "📦 تحميل الحزم..."
+          flutter pub get
+          echo "🔨 بناء APK..."
+          flutter build apk --release --no-shrink
+          echo "✅ تم البناء بنجاح"
+
+    artifacts:
+      - "**/**/app-release.apk"
+      - "**/flutter-apk/app-release.apk"
+
+    publishing:
+      email:
+        recipients:
+          - your@email.com
+        notify:
+          success: true
+          failure: true
